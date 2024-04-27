@@ -1,5 +1,5 @@
 # Wilab plus
-An improved system and link level simulator for ISAC and 5G NR Sidelink positioning
+An improved system and link level simulator for ISAC and 5G NR Sidelink positioning.
 
 We are uploading the simulator...some supporting documents could be found in the [Wiki Page](https://github.com/V2Xgithub/WiLabV2Xsim/wiki) and others may not be updated...
 For Octave compatible version, please see branch ***Octave-version***
@@ -59,7 +59,9 @@ Francesco Romeo
 
 *****
 
-sidelink定位模块：运行simulation.m , 在mainV2X.m中每个TTI结束mainCV2XttiEnds后进行sidelink定位，定位函数模块：MainFiles\mainV2XSidelinkPosition.m 
+Sidelink定位模块：based on https://github.com/Group85GP/Group85GP/tree/5G-positioning-simulator/.
+
+运行simulation.m , 在mainV2X.m中每个TTI结束mainCV2XttiEnds后进行sidelink定位，定位函数模块：MainFiles\mainV2XSidelinkPosition.m 
 其中函数pf.plotSysLayout绘制系统布局图。函数pf.plotCDF绘制累积分布函数(CDF)图。LocErrall为定位误差
 
 *****
