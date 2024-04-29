@@ -27,7 +27,7 @@ function[sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig(phyParams)
 
     %% Configuration for positioning module
     % indicator of using SL positioning module
-    sysPar.SLposi_en=true;
+    sysPar.SLposi_en=false;
 
     if sysPar.SLposi_en
         %% ====Basic Parameters Config.====%
@@ -87,6 +87,8 @@ function[sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig(phyParams)
         % SRS.m_srs_b = carrier.NSizeGrid;
         PE.AngEstiMethodSel = 'music1';
         PE.RngEstiMethodSel = 'toa_music';
+    else
+        [carrier, BeamSweep, RFI, PE] = deal([],[],[],[]); %定位模块不启动时
     end
     
 
