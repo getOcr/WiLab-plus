@@ -1,4 +1,4 @@
-function [simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement] = mainV2X(appParams,simParams,phyParams,outParams,simValues,outputValues,positionManagement,sysPar, carrier, BeamSweep, RFI, PE)
+function [posEr,simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement,timeManagement] = mainV2X(appParams,simParams,phyParams,outParams,simValues,outputValues,positionManagement,sysPar, carrier, BeamSweep, RFI, PE)
 % Core function where events are sorted and executed
 
 %% Initialization
@@ -12,6 +12,17 @@ CRLB_Range_Array =  [];
 CRLB_Range_Sum = [];
 ROOT_CRLB_Range_Array = [];
 CRLB_Range_FilterSum=[];
+
+d4v = [];
+d4r = [];
+CRLBv = [];
+CRLBr = [];
+
+posEr = [];
+rangeEr = [];
+
+distAll = [];
+SINRofdistAll = [];
 % The variable minNextSuperframe is used in the case of coexistence
 minNextSuperframe = min(timeManagement.coex_timeNextSuperframe);
 
@@ -28,6 +39,8 @@ fprintf('Simulation ID: %d\nMessage: %s\n',outParams.simID, outParams.message);
 fprintf('Simulation Time: ');
 reverseStr = '';
 fprintf('\n ');
+
+
 while timeManagement.timeNow < simParams.simulationTime
     
     % The instant and node of the next event is obtained
@@ -241,9 +254,14 @@ while timeManagement.timeNow < simParams.simulationTime
                 %%%%%%%车辆定位模块
                 if sysPar.SLposi_en
                     % 先随机生成一个包含随机0和1的nRBx1资源分配矩阵
-                    ResourseAllocation_RB = randi([0, 1], appParams.RBsFrequencyV2V, 1);
+                    %ResourseAllocation_RB = randi([0, 1], appParams.RBsFrequencyV2V, 1);
+                    ResourseAllocation_RB = randi([0, 1], 272, 1);
                     % 定位函数
-                    [Angle_esti,Range_esti,EstiLoc,LocErr,LocErrall] = mainV2XSidelinkPosition(ResourseAllocation_RB,positionManagement,sysPar, carrier, BeamSweep, RFI, PE);
+                    
+                    [Angle_esti,Range_esti,EstiLoc,LocErr,LocErrall,Error_RangeEst] = mainV2XSidelinkPosition(ResourseAllocation_RB,positionManagement,sysPar, carrier, BeamSweep, RFI, PE);
+                    posEr = [posEr LocErr];
+                    rangeEr = [rangeEr Error_RangeEst];
+
                 end
  
             end
@@ -273,7 +291,19 @@ while timeManagement.timeNow < simParams.simulationTime
 
             [phyParams,simValues,outputValues,sinrManagement,stationManagement,timeManagement] = ...
                 mainCV2XtransmissionEnds(appParams,simParams,phyParams,outParams,simValues,outputValues,timeManagement,positionManagement,sinrManagement,stationManagement);
+            
+            if length(stationManagement.transmittingIDsCV2X)==1
+                tempID = stationManagement.neighborsIDLTE(stationManagement.transmittingIDsCV2X,:);
+                neighborIDofTransCar = tempID(tempID~=0);
+                dist = positionManagement.distanceReal(neighborIDofTransCar,stationManagement.transmittingIDsCV2X);  %29*1
+                SINRofdist = sinrManagement.neighborsSINRaverageCV2X(sinrManagement.neighborsSINRaverageCV2X>0);     %1*29
+                distAll = [distAll;dist];
+                SINRofdistAll = [SINRofdistAll SINRofdist];
+                RangeCRLBAll = CaculateCLRB_Range(SINRofdistAll, phyParams.SCS_NR);
 
+                %loglog(sort(distAll), sort(sqrt(RangeCRLBAll)), 'b-', 'linewidth',1,'MarkerFaceColor', 'blue', 'DisplayName', 'MCS: 5, SCS: 30 kHz');
+                %loglog(sort(distAll), sort(SINRofdistAll, 'descend'), 'b-', 'linewidth',1,'MarkerFaceColor', 'blue', 'DisplayName', 'MCS: 5, SCS: 30 kHz');
+            end
             % DEBUG TX-RX
             % if isfield(stationManagement,'IDvehicleTXLTE') && ~isempty(stationManagement.transmittingIDsLTE)
             %     printDebugTxRx(timeManagement.timeNow,'LTE subframe ends',stationManagement,sinrManagement);
@@ -290,14 +320,56 @@ while timeManagement.timeNow < simParams.simulationTime
                 %keyboard; % 启动调试模式
             end
             CLRB_Range = zeros(1,length(TransmissionCar));
-
-            for i = 1:length(TransmissionCar)
+            CRLB_Velocity = zeros(1,length(TransmissionCar));
+            %Allsinr = zeros()
+            
+            a =[];    
+            for i = 1:length(a)%TransmissionCar)
                 % 计算每辆车的 SINR
                 sinr = mean(cumulativeSINR(:, TransmissionCar(i)));
+                a = CaculateCLRB_Range(sinr, phyParams.SCS_NR);
 
+                Allsinr4Trans = cumulativeSINR(:,TransmissionCar(i));
+                d4Transmissioncar = positionManagement.distanceReal(:,TransmissionCar(i));
+
+                All_CRLB_Velocity = CaculateCLRB_Velocity(Allsinr4Trans, phyParams.SCS_NR);
+                All_CRLB_Range = CaculateCLRB_Range(Allsinr4Trans, phyParams.SCS_NR);
+
+                CRLBv_Valid = All_CRLB_Velocity(All_CRLB_Velocity<3);
+                CRLBr_Valid = All_CRLB_Range(All_CRLB_Range<3);
+
+                Car_Valid_v = find(All_CRLB_Velocity<3);
+                d_Valid_v = d4Transmissioncar(All_CRLB_Velocity<3);
+                Car_Valid_r = find(All_CRLB_Range<3);
+                d_Valid_r = d4Transmissioncar(All_CRLB_Range<3);
+
+                d4v = [d4v;d_Valid_v];
+                CRLBv = [CRLBv;CRLBv_Valid];
+                d4r = [d4r;d_Valid_r];
+                CRLBr = [CRLBr;CRLBr_Valid];
+
+                
+
+                %plot(sort(d_Valid_r),sort(CRLBr_Valid));
+                %plot(log(sort(d4r)),sort(sqrt(CRLBr)));
+
+                %[sinrMax, Car_maxsinr] = max(Allsinr4Trans);
+                %d4Car_maxsinr = d4Transmissioncar(Car_maxsinr);
+                
+                %CRLB_RangeBest = CaculateCLRB_Range(sinrMax, phyParams.SCS_NR);
+                %CLRB_RangeBest = CaculateCLRB_Velocity(sinrMax, phyParams.SCS_NR);
                 % 使用 SINR 计算 CLRB_Range
-                CLRB_Range(i) = CaculateCLRB_Range(sinr, phyParams.SCS_NR);
+                %CLRB_Range(i) = CaculateCLRB_Range(sinr, phyParams.SCS_NR);
+                %CLRB_RangeNew = CaculateCLRB_Range(Allsinr4Trans, phyParams.SCS_NR);
                 %fprintf('第283行ttiCV2Xstarts：第%d辆车范围估计的CRLB=%0.7f m\n',TransmissionCar(i),CLRB_Range(i));
+                
+                %CLRB_RangeValid = CLRB_RangeNew(CLRB_RangeNew<100);
+                %d4TransmissioncarValid = d4Transmissioncar(CLRB_RangeNew<100);
+                %scatter(log(d4TransmissioncarValid),CLRB_RangeValid);
+                
+                %使用SINR计算CRLB_Speed
+                %CRLB_VelocityNew = CaculateCLRB_Velocity(Allsinr4Trans, phyParams.SCS_NR);
+                %CRLB_Velocity(i) = CaculateCLRB_Velocity(sinr, phyParams.SCS_NR);
             end
 
 

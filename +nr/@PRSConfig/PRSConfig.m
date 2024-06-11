@@ -40,7 +40,7 @@ classdef PRSConfig
         % Muting bit repetition factor.
         T_muting = 1;       
         % PRB Number.
-        NumRB = 25;       
+        NumRB = 272;       
         % Muting bitmap1
         bitmap1 = [];     
         % Muting Bitmap2

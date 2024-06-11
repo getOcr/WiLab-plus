@@ -28,7 +28,7 @@ classdef SRSConfig
         B_SRS = 0;
         % Row index of the bandwidth configuration in the table 6.4.1.4.3-1 
         % form 3GPP TS 38.211 v16.4.0. The value must be one of (0 : 63).
-        C_SRS = 25;  %61
+        C_SRS = 61;  %100Mhz 61
         % Hopping type of SRS symbols. The value must be one of {'neither',
         % 'groupHopping', 'sequenceHopping'}.
         groupOrSeqHopping = 'neither';

@@ -27,7 +27,7 @@ function[sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig(phyParams)
 
     %% Configuration for positioning module
     % indicator of using SL positioning module
-    sysPar.SLposi_en=false;
+    sysPar.SLposi_en=1;
 
     if sysPar.SLposi_en
         %% ====Basic Parameters Config.====%
@@ -43,7 +43,8 @@ function[sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig(phyParams)
         sysPar.SignalType = 'SRS';       %'SRS', 'CSIRS'
         sysPar.BeamSweep = 0;
         sysPar.SNR = 20; % in dB 
-        sysPar.bandwidth = phyParams.BwMHz*1e6; %bandwidth与主函数对齐
+        sysPar.bandwidth = 100*1e6;
+        %sysPar.bandwidth = phyParams.BwMHz*1e6; %bandwidth与主函数对齐
         %% ====System layout Config.========%
         %%以下四行是默认值，在定位函数里可有修改
         sysPar.h_BS = 1.5;
@@ -65,7 +66,7 @@ function[sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig(phyParams)
         sysPar = cf.ParaTransConfig(sysPar);
         %% ====Carrier Config.==============%
         carrier = nr.CarrierConfig;
-        carrier.NSizeGrid = RBtable_5G(phyParams.BwMHz,phyParams.SCS_NR);   %RB数量，remember to modify the corresponding configuration in signal Config function
+        carrier.NSizeGrid = 272;%RBtable_5G(sysPar.bandwidth,phyParams.SCS_NR);   %RB数量，remember to modify the corresponding configuration in signal Config function
         carrier.SubcarrierSpacing = phyParams.SCS_NR;   %子载波间隔与主函数对齐
         %% ====RS Config.===================%
         sysPar = cf.SigResConfig(sysPar, carrier);

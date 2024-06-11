@@ -1,4 +1,4 @@
-function WiLabV2Xsim(varargin)
+function[posE,simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement,timeManagement,positionManagement] = WiLabV2Xsim(varargin)
 % The function WiLabV2Xsim() is the main function of the simulator
 
 % ==============
@@ -231,7 +231,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Start Simulation
-[simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement] = mainV2X(appParams,simParams,phyParams,outParams,simValues,outputValues,positionManagement,sysPar, carrier, BeamSweep, RFI, PE);    
+[posE,simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement,timeManagement] = mainV2X(appParams,simParams,phyParams,outParams,simValues,outputValues,positionManagement,sysPar, carrier, BeamSweep, RFI, PE);    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% KPIs Computation (Output)

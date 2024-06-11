@@ -10,9 +10,9 @@ fprintf('Physical layer settings\n');
 
 % [BwMHz]
 % Bandwidth (MHz)
-[phyParams,varargin] = addNewParam([],'BwMHz',10,'Bandwidth (MHz)','double',fileCfg,varargin{1});
+[phyParams,varargin] = addNewParam([],'BwMHz',10,'Bandwidth (MHz)','double',fileCfg,varargin{1});  %这里的10是default值
 if phyParams.BwMHz~=1.4 && phyParams.BwMHz~=5 && phyParams.BwMHz~=10 && phyParams.BwMHz~=20 && phyParams.BwMHz~=40
-    error('Invalid Bandwidth. Possible values: 1.4, 5, 10, 20 30MHz');
+    error('Invalid Bandwidth. Possible values: 1.4, 5, 10, 20 40MHz');
 end
 if simParams.technology~=constants.TECH_ONLY_CV2X && phyParams.BwMHz~=10 % not only C-V2X and not 10MHz
     error('Invalid Bandwidth. Only with C-V2X (lte or 5g) it can be different from 10 MHz');

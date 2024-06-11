@@ -18,7 +18,7 @@ axis(edge(:));
 xlabel('x-axis / m');ylabel('y-axis / m');
 zlabel('z-axis / m');
 title('System Layout');
-hl=legend('BS','UE',...
+hl=legend('referenceUE','targetUE',...
     'Location','NorthEast');
 set(hl,'edgecolor','k','FontSize',11);
 set(gca,'FontSize',11);

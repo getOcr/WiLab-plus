@@ -86,8 +86,8 @@ d = 10 ;
 myMatrix =  d * ones(matrixSize);  % 创建元素都是10的矩阵
 myMatrix = myMatrix - d * eye(matrixSize);  % 减去对角线上元素为10的矩阵
 
-positionManagement.distanceReal = myMatrix;
-positionManagement.distanceRealOld = myMatrix;
+%positionManagement.distanceReal = myMatrix;
+positionManagement.distanceFake = myMatrix;
 %%%%%%%%%%
 
 % Call function to update positionManagement.distance matrix where D(i,j) is the

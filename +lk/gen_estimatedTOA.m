@@ -19,7 +19,7 @@ for iTr = 1 : nTr
         for islot = 1 : nRSslot
             if sysPar.IndUplink
                 eval(['Range_esti(islot, iRr, iTr) = ', PE.RngEstiMethodSel,...
-                    '(PE,hcfr_esti(:, :, 1, islot, iRr, iTr) );']);
+                    '(PE,hcfr_esti(:, :, 1, islot, iRr, iTr) );']);     %eval把字符串当作代码运行
             else
                 eval(['Range_esti(islot, iRr, iTr) = ', PE.RngEstiMethodSel,...
                     '(PE,permute( hcfr_esti(:, 1, :, islot, iRr, iTr), [1 3 2]) );'] );

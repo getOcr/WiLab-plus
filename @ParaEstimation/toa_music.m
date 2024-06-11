@@ -21,18 +21,18 @@ UN=EgV(:,i);   % noise subspace
 %take nRx dimension as nsnapshot
 Interval1 = 1;
 range= (0:Interval1:87);
-Tmp_co = ranging_music(PE,range,freq_index,UN);
+Tmp_co = ranging_music(PE,range,freq_index,UN);%初步搜索
 Interval2 = 0.05;
 range= (Tmp_co-Interval1:Interval2:Tmp_co+Interval1);
-result = ranging_music(PE,range,freq_index,UN);
+result = ranging_music(PE,range,freq_index,UN);%在Tmp_co附近精细搜索
 end
 
 function out = ranging_music(PE,range,freq_index,UN)
 RangeEst = zeros(length(range),1);
-for irng = 1 : length(range)
-a = exp(-1i * 2 * pi * (freq_index ) * PE.deltaf * range(irng)/PE.c);
-RangeEst(irng) = 1/abs(a'*(UN*UN')*a);
-end
+    for irng = 1 : length(range)
+    a = exp(-1i * 2 * pi * (freq_index ) * PE.deltaf * range(irng)/PE.c);
+    RangeEst(irng) = 1/abs(a'*(UN*UN')*a);
+    end
 % plot(RangeEst)
 [~,Sub]=max(RangeEst);
 out=range(Sub);

@@ -16,13 +16,17 @@ para.sizeSubchannel=10;      % Number of Resource Blocks for each subchannel 每
 para.Raw =100;
 para.speed=40;               % Average speed
 para.speedStDev=7;           % Standard deviation speed
-para.SCS=15;                 % Subcarrier spacing [kHz]
+para.SCS=30;                 % Subcarrier spacing [kHz]
 para.pKeep=0.4;              % keep probability
 para.periodicity=0.1;        % periodic generation every 100ms
 para.sensingThreshold=-126;  % threshold to detect resources as busy
 para.BRAlgorithm=18;
-para.rho=[30 50 70];
-para.BandMHz=[20];
+para.rho=[30];
+para.BandMHz=[40];
+para.cbrSensingInterval=0.005;
+para.cbrSensingIntervalDesynchN=100;
+para.F=6;
+para.Ptx_dBm=23;
 para.configFile = 'Highway3GPP.cfg';
 %[para,sysPar, carrier, BeamSweep, RFI, PE] = WilabplusConfig();
 
@@ -32,6 +36,8 @@ for BandMHz=para.BandMHz
 if BandMHz==20
     MCS=5;
 elseif BandMHz==40
+    MCS=23;
+elseif BandMHz==100
     MCS=5;
 end    
 for i = para.rho % number of vehicles/km
@@ -41,7 +47,7 @@ for i = para.rho % number of vehicles/km
         % 30mins or one hour of computation time.
 
     if i==30
-        simTime=10;     % simTime=300
+        simTime=2;     % simTime=300
     elseif i==50
         simTime=10;      % simTime=150;
     elseif i==70
@@ -53,10 +59,10 @@ outputFolder = sprintf('Output/LWCC/NRV2X_%dMHz_periodic',BandMHz);
 
 
 % % % Launches simulation
-WiLabV2Xsim(para.configFile,'outputFolder',outputFolder,'Technology','5G-V2X','SCS_NR',para.SCS,'MCS_NR',MCS,'beaconSizeBytes',para.packetSize,...
+[posE,simValues,outputValues,appParams,simParams,phyParams,sinrManagement,outParams,stationManagement,timeManagement,positionManagement] = WiLabV2Xsim(para.configFile,'outputFolder',outputFolder,'Technology','5G-V2X','SCS_NR',para.SCS,'MCS_NR',MCS,'beaconSizeBytes',para.packetSize,...
     'simulationTime',simTime,'rho',i,'probResKeep',para.pKeep,'BwMHz',BandMHz,'vMean',para.speed,'vStDev',para.speedStDev,...
     'cv2xNumberOfReplicasMax',para.nTransm,'allocationPeriod',para.periodicity,'sizeSubchannel',para.sizeSubchannel,...
-    'powerThresholdAutonomous',para.sensingThreshold,'Raw',para.Raw,'FixedPdensity',false,'dcc_active',false,'cbrActive',true,'BRAlgorithm',para.BRAlgorithm)%'sysPar', sysPar,'carrier',carrier, 'BeamSweep', BeamSweep,'RFI', RFI,'PE',PE)
+    'powerThresholdAutonomous',para.sensingThreshold,'Raw',para.Raw,'FixedPdensity',false,'dcc_active',false,'cbrActive',true,'BRAlgorithm',para.BRAlgorithm,'cbrSensingInterval',para.cbrSensingInterval);%'sysPar', sysPar,'carrier',carrier, 'BeamSweep', BeamSweep,'RFI', RFI,'PE',PE)
 
 % 
 % WiLabV2Xsim(configFile,'outputFolder',outputFolder,'Technology','5G-V2X','MCS_NR',MCS,'SCS_NR',SCS,'beaconSizeBytes',packetSize,...
@@ -118,4 +124,6 @@ end
 % xlabel("Delay [s]")
 % ylabel("CDF")
 % yline(0.95,'HandleVisibility','off');
+
+% 
 

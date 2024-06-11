@@ -1,7 +1,7 @@
 function [structureChanged,varargin] = addNewParam(structureToChange,field,defaultValue,paramDescription,paramType,fileCfg,varargin)
 % Function to create a new parameter
 
-sourceForValue = 0; % 0: default
+sourceForValue = 0; % 0: 表示用的是default
 value = defaultValue;
 valueInCfg = searchParamInCfgFile(fileCfg,field,paramType);
 if ~isnan(valueInCfg)

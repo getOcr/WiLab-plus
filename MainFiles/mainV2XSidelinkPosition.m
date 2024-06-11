@@ -1,4 +1,4 @@
-function [Angle_esti,Range_esti,EstiLoc,LocErr,LocErrall] = mainV2XSidelinkPosition(ResourseAllocation_RB,positionManagement,sysPar, carrier, BeamSweep, RFI, PE)
+function [Angle_esti,Range_esti,EstiLoc,LocErr,LocErrall,Error_RangeEst] = mainV2XSidelinkPosition(ResourseAllocation_RB,positionManagement,sysPar, carrier, BeamSweep, RFI, PE)
 % V2X Sidelink Position车辆定位模块
 %
 % Description:
@@ -61,17 +61,26 @@ All_positions=sorted_nearest_positions';
 sysPar.h_BS = 3;
 sysPar.h_UE = 1.5;
 sysPar.BSorientation = pi * ones(1, sysPar.nBS);
-
 sysPar.BSPos = [All_positions(1, 1), All_positions(1, 3); All_positions(2, 1), All_positions(2, 3);sysPar.h_BS,sysPar.h_BS];
 sysPar.UEPos = [All_positions(1, 2); All_positions(2, 2);sysPar.h_UE];
 sysPar.UEorientation = 0  * rand(1, sysPar.nUE); 
 
-sysPar.BSorientation = [1*pi,1*pi];
-sysPar.UEorientation = pi * ones(1, sysPar.nUE); 
-sysPar.BSPos = [4,4;500,400;3,3];
-sysPar.UEPos=[-40;450;1.5];
-sysPar.UEorientation = pi * ones(1, sysPar.nUE);
+%sysPar.BSPos = [4,4;500,400;3,3];
+%sysPar.UEPos=[-40;450;1.5];
 
+sysPar.BSPos = [0,0;0,25;3,3];
+sysPar.UEPos=[-12.5*sqrt(3);12.5;1.5];
+
+
+
+%求各锚点和UE之间的实际距离
+sysPar.BSPos_2D = sysPar.BSPos(1:end-1,:);
+sysPar.UEPos_2D = sysPar.UEPos(1:end-1,:);
+Posdiff = sysPar.BSPos_2D - sysPar.UEPos_2D;
+sysPar.range_real = abs(sqrt(Posdiff(1,:).^2-Posdiff(2,:).^2));
+
+%sysPar.BSorientation = [pi+atan(abs(Posdiff(2,1)/Posdiff(1,1))),pi-atan(abs(Posdiff(2,2)/Posdiff(1,2)))];
+%sysPar.UEorientation = 0 * rand(1, sysPar.nUE); 
 %% ====Channel Simulator Config.====%
 [Layout, Chan] = cf.ChanSimuConfig(sysPar, carrier);
 
@@ -110,9 +119,10 @@ data.txGrid = ResourseAllocation_CarrierSymbol .* data.txGrid;
 
 % angle estimation
 %调用函数lk.gen_estimated_angle进行AOA角度估计，生成角度估计结果(Angle_esti)
-%调用函数lk.gen_estimatedTOA进行到达时间(TOA)估计，生成距离估计结果(Range_esti)
 [data.Angle_esti] = lk.gen_estimated_angle(sysPar, data.hcfr_esti,PE);
-[data.Range_esti] = lk.gen_estimatedTOA(sysPar,data.hcfr_esti,PE);
+
+%调用函数lk.gen_estimatedTOA进行到达时间(TOA)估计，生成距离估计结果(Range_esti)
+[data.Range_esti] = 0.3 * lk.gen_estimatedTOA(sysPar,data.hcfr_esti,PE);
 
 %% LS localization
 %调用函数lk.gen_UElocation进行最小二乘定位，生成估计位置(EstiLoc)、定位误差(LocErr)和基站选择结果(BS_sel)
@@ -126,6 +136,7 @@ fprintf('\nLocErrall:%0.3f\n',data.LocErrall);
 
 Angle_esti=data.Angle_esti;
 Range_esti=data.Range_esti;
+Error_RangeEst = abs(Range_esti - sysPar.range_real);
 EstiLoc=data.EstiLoc;
 LocErr=data.LocErr;
 LocErrall=data.LocErrall;
@@ -133,7 +144,7 @@ LocErrall=data.LocErrall;
 % 关闭之前的图像窗口
 close all;
 %% 调用函数pf.plotSysLayout绘制系统布局图。
-%pf.plotSysLayout(sysPar,Layout, data);  % display Layout
+pf.plotSysLayout(sysPar,Layout, data);  % display Layout
 % % 调用函数pf.plotCIRMeas绘制信道冲激响应测量图。
 %pf.plotCIRMeas(sysPar, data);
 % % 
@@ -141,16 +152,16 @@ close all;
 %pf.plotCDF(sysPar, data);% display CDF
 % 
 % % 调用函数pf.plotPDP绘制功率-时延特性图。
-% pf.plotPDP(sysPar, data);% display power-delay profile
+%pf.plotPDP(sysPar, data);% display power-delay profile
 % 
 % % 调用函数pf.plotCIR绘制完美信道冲激响应图。
-% pf.plotCIR(sysPar, data); % display perfect CIR
+%pf.plotCIR(sysPar, data); % display perfect CIR
 % 
 % % 调用函数pf.plotPhaseDiff绘制相位差图。
-% pf.plotPhaseDiff(sysPar, data); % display Phase difference
+%pf.plotPhaseDiff(sysPar, data); % display Phase difference
 % 
 % % 调用函数pf.plotChEstiCFR绘制估计的通道频率响应图。
-% pf.plotChEstiCFR(sysPar, data); % display estimated CFR
+%pf.plotChEstiCFR(sysPar, data); % display estimated CFR
 % 
 % % 调用函数pf.plotResources绘制参考信号资源网格图
 % pf.plotResources(sysPar, data); % display RS resources grid

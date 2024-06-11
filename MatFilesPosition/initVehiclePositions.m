@@ -120,19 +120,20 @@ if simParams.typeOfScenario ~= constants.SCENARIO_TRACE     % Not traffic trace
         positionManagement.Xmin = 0;                                        % Min X coordinate
         positionManagement.Xmax = simParams.roadLength;                     % Max X coordinate
         positionManagement.Ymin = 0;                                        % Min Y coordinate
-        positionManagement.Ymax = 2*simParams.NLanes*simParams.roadWidth;   % Max Y coordinate
+        positionManagement.Ymax = 2*simParams.NLanes*simParams.roadWidth;   % Max Y coordinate   2*3*4
         
         vMeanMs = simParams.vMean/3.6;                % Mean vehicle speed (m/s)
         vStDevMs = simParams.vStDev/3.6;              % Speed standard deviation (m/s)
-        simParams.rhoM = simParams.rho/1e3;           % Average vehicle density (vehicles/m)
+        simParams.rhoM = simParams.rho/1e3;           % Average vehicle density (vehicles/m)   30每x轴千米，0.03每米
         
-        Nvehicles = round(simParams.rhoM*positionManagement.Xmax);   % Number of vehicles
+        Nvehicles = round(simParams.rhoM*positionManagement.Xmax);   % Number of vehicles   根据密度和路长确定
         
         simValues.IDvehicle(:,1) = 1:Nvehicles;             % Vector of IDs
         simValues.maxID = Nvehicles;                        % Maximum vehicle's ID
         
         if simParams.randomXPosition
             % Generate X coordinates of vehicles (uniform distribution)
+            % 随机生成位置
             positionManagement.XvehicleReal = positionManagement.Xmax.*rand(Nvehicles,1);
         else
             % Uniformly positioned
