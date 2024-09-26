@@ -65,4 +65,5 @@ Sidelink定位模块：based on https://github.com/Group85GP/Group85GP/tree/5G-p
 其中函数pf.plotSysLayout绘制系统布局图。函数pf.plotCDF绘制累积分布函数(CDF)图。LocErrall为定位误差
 
 *****
+Another part of work: https://github.com/getOcr/RTTAOA_SidelinkPositioning
 
