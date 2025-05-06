@@ -1,6 +1,20 @@
 # Wilab plus
 An improved system and link level simulator for ISAC and 5G NR Sidelink positioning.
 
+# *****briefly instruction*****
+
+Sidelink positioning module：based on https://github.com/Group85GP/Group85GP/tree/5G-positioning-simulator/.
+
+Run simulation.m, perform sidelink positioning after each TTI ends mainCV2XttiEnds in mainV2X.m, positioning function module: MainFiles\mainV2XSidelinkPosition.m
+The function pf.plotSysLayout draws the system layout diagram. The function pf.plotCDF draws the cumulative distribution function (CDF) diagram. LocErrall is the positioning error
+
+# *****Dedicated RTT AOA SL Positioning module in physical layer*****
+
+Another part of work off mine: https://github.com/getOcr/RTTAOA_SidelinkPositioning
+Can be included in Wilab-plus system as the physical module
+
+# *****WiLabV2Xsim citation*****
+
 We are uploading the simulator...some supporting documents could be found in the [Wiki Page](https://github.com/V2Xgithub/WiLabV2Xsim/wiki) and others may not be updated...
 For Octave compatible version, please see branch ***Octave-version***
 
@@ -54,16 +68,3 @@ Michele Menarini
 Francesco Romeo 
 
 *****
-
-
-
-*****
-
-Sidelink定位模块：based on https://github.com/Group85GP/Group85GP/tree/5G-positioning-simulator/.
-
-运行simulation.m , 在mainV2X.m中每个TTI结束mainCV2XttiEnds后进行sidelink定位，定位函数模块：MainFiles\mainV2XSidelinkPosition.m 
-其中函数pf.plotSysLayout绘制系统布局图。函数pf.plotCDF绘制累积分布函数(CDF)图。LocErrall为定位误差
-
-*****
-Another part of work: https://github.com/getOcr/RTTAOA_SidelinkPositioning
-
