@@ -10,8 +10,9 @@ The function pf.plotSysLayout draws the system layout diagram. The function pf.p
 
 # *****Dedicated RTT AOA SL Positioning module in physical layer*****
 
-Another part of work off mine: https://github.com/getOcr/RTTAOA_SidelinkPositioning
-Can be included in Wilab-plus system as the physical module
+Another part of work of mine: https://github.com/getOcr/RTTAOA_SidelinkPositioning
+Based on TS38.211/TR38.901/TS38.355.
+This RTT module can be included in Wilab-plus system as the physical module.
 
 # *****WiLabV2Xsim citation*****
 
